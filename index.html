@@ -69,6 +69,82 @@
     </div>
 
     <div
+      style="
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        z-index: 10;
+      "
+    >
+      <div
+        id="welcomeAppIcon"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          width: 70px;
+          color: white;
+          font-size: 12px;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            backdrop-filter: blur(8px);
+          "
+        >
+          🤖
+        </div>
+        <span>About snOS</span>
+      </div>
+
+      <div
+        id="notesAppIcon"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          width: 70px;
+          color: white;
+          font-size: 12px;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            backdrop-filter: blur(8px);
+          "
+        >
+          📝
+        </div>
+        <span>Notes</span>
+      </div>
+    </div>
+
+    <div
       id="myWindow"
       style="
         position: absolute;
@@ -83,6 +159,7 @@
         color: #ffffff;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
         overflow: hidden;
+        z-index: 20;
       "
     >
       <div
@@ -139,6 +216,81 @@
       </div>
     </div>
 
+    <div
+      id="notesWindow"
+      style="
+        position: absolute;
+        top: 45%;
+        left: 45%;
+        transform: translate(-50%, -50%);
+        width: 340px;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 16px;
+        background-color: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(16px);
+        color: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        overflow: hidden;
+        display: none;
+        z-index: 30;
+      "
+    >
+      <div
+        id="notesHeader"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: rgba(56, 189, 248, 0.15);
+          padding: 8px 16px;
+          cursor: move;
+          border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        "
+      >
+        <span style="font-size: 13px; font-weight: bold; color: #38bdf8"
+          >Notes App</span
+        >
+        <button
+          id="closeNotesBtn"
+          style="
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          ✕
+        </button>
+      </div>
+
+      <div style="padding: 16px">
+        <textarea
+          id="noteInput"
+          placeholder="Type your notes here..."
+          style="
+            width: 100%;
+            height: 140px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+            color: white;
+            padding: 10px;
+            box-sizing: border-box;
+            resize: none;
+            font-family: inherit;
+            outline: none;
+          "
+        ></textarea>
+      </div>
+    </div>
+
     <script>
       function updateTime() {
         var currentTime = new Date().toLocaleString();
@@ -149,38 +301,57 @@
 
       const closeBtn = document.getElementById("closeBtn");
       const myWindow = document.getElementById("myWindow");
+      const welcomeAppIcon = document.getElementById("welcomeAppIcon");
 
       closeBtn.addEventListener("click", () => {
         myWindow.style.display = "none";
       });
 
-      const windowHeader = document.getElementById("windowHeader");
-      let isDragging = false;
-      let offsetX = 0;
-      let offsetY = 0;
-
-      windowHeader.addEventListener("mousedown", (e) => {
-        isDragging = true;
-
-        const rect = myWindow.getBoundingClientRect();
-        myWindow.style.transform = "none";
-        myWindow.style.left = rect.left + "px";
-        myWindow.style.top = rect.top + "px";
-
-        offsetX = e.clientX - rect.left;
-        offsetY = e.clientY - rect.top;
+      welcomeAppIcon.addEventListener("click", () => {
+        myWindow.style.display = "block";
       });
 
-      document.addEventListener("mousemove", (e) => {
-        if (isDragging) {
-          myWindow.style.left = e.clientX - offsetX + "px";
-          myWindow.style.top = e.clientY - offsetY + "px";
-        }
+      const closeNotesBtn = document.getElementById("closeNotesBtn");
+      const notesWindow = document.getElementById("notesWindow");
+      const notesAppIcon = document.getElementById("notesAppIcon");
+
+      closeNotesBtn.addEventListener("click", () => {
+        notesWindow.style.display = "none";
       });
 
-      document.addEventListener("mouseup", () => {
-        isDragging = false;
+      notesAppIcon.addEventListener("click", () => {
+        notesWindow.style.display = "block";
       });
+
+      function makeDraggable(windowElem, headerElem) {
+        let isDragging = false;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        headerElem.addEventListener("mousedown", (e) => {
+          isDragging = true;
+          const rect = windowElem.getBoundingClientRect();
+          windowElem.style.transform = "none";
+          windowElem.style.left = rect.left + "px";
+          windowElem.style.top = rect.top + "px";
+          offsetX = e.clientX - rect.left;
+          offsetY = e.clientY - rect.top;
+        });
+
+        document.addEventListener("mousemove", (e) => {
+          if (isDragging) {
+            windowElem.style.left = e.clientX - offsetX + "px";
+            windowElem.style.top = e.clientY - offsetY + "px";
+          }
+        });
+
+        document.addEventListener("mouseup", () => {
+          isDragging = false;
+        });
+      }
+
+      makeDraggable(myWindow, document.getElementById("windowHeader"));
+      makeDraggable(notesWindow, document.getElementById("notesHeader"));
     </script>
   </body>
 </html>
