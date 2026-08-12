@@ -31,7 +31,7 @@
         box-sizing: border-box;
         padding: 6px 18px;
         border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-        z-index: 100;
+        z-index: 1000;
       "
     >
       <p
@@ -146,10 +146,11 @@
 
     <div
       id="myWindow"
+      class="window"
       style="
         position: absolute;
         top: 50%;
-        left: 50%;
+        left: 55%;
         transform: translate(-50%, -50%);
         width: 320px;
         border: 1px solid rgba(56, 189, 248, 0.4);
@@ -218,10 +219,11 @@
 
     <div
       id="notesWindow"
+      class="window"
       style="
         position: absolute;
         top: 45%;
-        left: 45%;
+        left: 35%;
         transform: translate(-50%, -50%);
         width: 340px;
         border: 1px solid rgba(56, 189, 248, 0.4);
@@ -299,6 +301,16 @@
       }
       setInterval(updateTime, 1000);
 
+      let highestZIndex = 30;
+      function bringToFront(windowElem) {
+        highestZIndex++;
+        windowElem.style.zIndex = highestZIndex;
+      }
+
+      document.querySelectorAll(".window").forEach((win) => {
+        win.addEventListener("mousedown", () => bringToFront(win));
+      });
+
       const closeBtn = document.getElementById("closeBtn");
       const myWindow = document.getElementById("myWindow");
       const welcomeAppIcon = document.getElementById("welcomeAppIcon");
@@ -309,11 +321,21 @@
 
       welcomeAppIcon.addEventListener("click", () => {
         myWindow.style.display = "block";
+        bringToFront(myWindow);
       });
 
       const closeNotesBtn = document.getElementById("closeNotesBtn");
       const notesWindow = document.getElementById("notesWindow");
       const notesAppIcon = document.getElementById("notesAppIcon");
+      const noteInput = document.getElementById("noteInput");
+
+      if (localStorage.getItem("snOS_notes")) {
+        noteInput.value = localStorage.getItem("snOS_notes");
+      }
+
+      noteInput.addEventListener("input", () => {
+        localStorage.setItem("snOS_notes", noteInput.value);
+      });
 
       closeNotesBtn.addEventListener("click", () => {
         notesWindow.style.display = "none";
@@ -321,6 +343,7 @@
 
       notesAppIcon.addEventListener("click", () => {
         notesWindow.style.display = "block";
+        bringToFront(notesWindow);
       });
 
       function makeDraggable(windowElem, headerElem) {
@@ -330,6 +353,7 @@
 
         headerElem.addEventListener("mousedown", (e) => {
           isDragging = true;
+          bringToFront(windowElem);
           const rect = windowElem.getBoundingClientRect();
           windowElem.style.transform = "none";
           windowElem.style.left = rect.left + "px";
