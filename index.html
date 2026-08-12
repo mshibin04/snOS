@@ -3,9 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>snOS - WebOS</title>
+    <title>snOS</title>
   </head>
-
   <body
     style="
       margin: 0;
@@ -15,6 +14,7 @@
       background-position: center;
       font-family: system-ui, sans-serif;
       overflow: hidden;
+      user-select: none;
     "
   >
     <div
@@ -31,6 +31,7 @@
         box-sizing: border-box;
         padding: 6px 18px;
         border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        z-index: 100;
       "
     >
       <p
@@ -53,7 +54,7 @@
           margin: 0;
         "
       >
-        ⚡ snOS ⚡
+        ⚡ SN OS ⚡
       </p>
 
       <p
@@ -64,56 +65,78 @@
           border-radius: 12px;
           margin: 0;
         "
-      >
-        Loading...
-      </p>
+      ></p>
     </div>
 
     <div
+      id="myWindow"
       style="
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         width: 320px;
-        padding: 24px;
         border: 1px solid rgba(56, 189, 248, 0.4);
         border-radius: 16px;
-        background-color: rgba(15, 23, 42, 0.75);
+        background-color: rgba(15, 23, 42, 0.85);
         backdrop-filter: blur(16px);
         color: #ffffff;
-        text-align: center;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        overflow: hidden;
       "
     >
-      <img
-        src="https://api.dicebear.com/7.x/bottts/svg?seed=SNOS"
-        alt="Avatar"
+      <div
+        id="windowHeader"
         style="
-          width: 80px;
-          height: 80px;
-          border-radius: 50%;
-          border: 2px solid #38bdf8;
-          margin-bottom: 12px;
-        "
-      />
-      <h2 style="margin: 0 0 8px 0; color: #38bdf8">Welcome to snOS</h2>
-      <p style="margin: 0 0 16px 0; color: #cbd5e1; font-size: 14px">
-        Personal Web Operating System
-      </p>
-      <button
-        style="
-          background-color: #38bdf8;
-          color: #0f172a;
-          border: none;
-          padding: 8px 18px;
-          font-weight: bold;
-          border-radius: 8px;
-          cursor: pointer;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: rgba(56, 189, 248, 0.15);
+          padding: 8px 16px;
+          cursor: move;
+          border-bottom: 1px solid rgba(56, 189, 248, 0.2);
         "
       >
-        Booting Up...
-      </button>
+        <span style="font-size: 13px; font-weight: bold; color: #38bdf8"
+          >snOS</span
+        >
+        <button
+          id="closeBtn"
+          style="
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          ✕
+        </button>
+      </div>
+
+      <div style="padding: 24px; text-align: center">
+        <img
+          src="https://api.dicebear.com/7.x/bottts/svg?seed=SNOS"
+          alt="Avatar"
+          style="
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #38bdf8;
+            margin-bottom: 12px;
+          "
+        />
+        <h2 style="margin: 0 0 8px 0; color: #38bdf8">snOS</h2>
+        <p style="margin: 0 0 16px 0; color: #cbd5e1; font-size: 14px">
+          Personal Web Operating System
+        </p>
+      </div>
     </div>
 
     <script>
@@ -122,9 +145,42 @@
         var timeText = document.querySelector("#timeElement");
         timeText.innerHTML = currentTime;
       }
-
-      // Update clock every second
       setInterval(updateTime, 1000);
+
+      const closeBtn = document.getElementById("closeBtn");
+      const myWindow = document.getElementById("myWindow");
+
+      closeBtn.addEventListener("click", () => {
+        myWindow.style.display = "none";
+      });
+
+      const windowHeader = document.getElementById("windowHeader");
+      let isDragging = false;
+      let offsetX = 0;
+      let offsetY = 0;
+
+      windowHeader.addEventListener("mousedown", (e) => {
+        isDragging = true;
+
+        const rect = myWindow.getBoundingClientRect();
+        myWindow.style.transform = "none";
+        myWindow.style.left = rect.left + "px";
+        myWindow.style.top = rect.top + "px";
+
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+      });
+
+      document.addEventListener("mousemove", (e) => {
+        if (isDragging) {
+          myWindow.style.left = e.clientX - offsetX + "px";
+          myWindow.style.top = e.clientY - offsetY + "px";
+        }
+      });
+
+      document.addEventListener("mouseup", () => {
+        isDragging = false;
+      });
     </script>
   </body>
 </html>
