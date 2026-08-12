@@ -2,103 +2,129 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>snOS - welcome Screen</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>snOS - WebOS</title>
   </head>
+
   <body
     style="
       margin: 0;
-      padding: 0;
       height: 100vh;
-      background: linear-gradient(135deg, #0f2027, #2c5364);
-      color: white;
-      font-family: &quot;Segoe UI&quot;, Tahoma, sans-serif;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
+      background-image: url(&quot;./wallpaper.png&quot;);
+      background-size: cover;
+      background-position: center;
+      font-family: system-ui, sans-serif;
+      overflow: hidden;
     "
   >
-    <img
-      src="https://api.dicebear.com/7.x/bottts/svg?seed=SNOS"
-      alt="snOS Avatar"
+    <div
       style="
-        width: 120px;
-        height: 120px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 3px solid rgb(255, 255, 0.4);
-        margin-bottom: 16px;
-      "
-    />
-
-    <h1
-      style="
-        font-size: 52px;
-        letter-spacing: 8px;
-        margin: 4px 0;
-        text-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        position: absolute;
+        top: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(12px);
+        color: white;
+        box-sizing: border-box;
+        padding: 6px 18px;
+        border-bottom: 1px solid rgba(56, 189, 248, 0.2);
       "
     >
-      s n O S
-    </h1>
+      <p
+        style="
+          font-weight: bold;
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 4px 12px;
+          border-radius: 12px;
+          margin: 0;
+        "
+      >
+        snOS
+      </p>
 
-    <h2
+      <p
+        style="
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 4px 12px;
+          border-radius: 12px;
+          margin: 0;
+        "
+      >
+        ⚡ snOS ⚡
+      </p>
+
+      <p
+        id="timeElement"
+        style="
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 4px 12px;
+          border-radius: 12px;
+          margin: 0;
+        "
+      >
+        Loading...
+      </p>
+    </div>
+
+    <div
       style="
-        font-size: 20px;
-        font-weight: 300;
-        margin: 0 0 20px 0;
-        color: #a8c0ff;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 320px;
+        padding: 24px;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 16px;
+        background-color: rgba(15, 23, 42, 0.75);
+        backdrop-filter: blur(16px);
+        color: #ffffff;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
       "
     >
-      Personal Web Operating System
-    </h2>
+      <img
+        src="https://api.dicebear.com/7.x/bottts/svg?seed=SNOS"
+        alt="Avatar"
+        style="
+          width: 80px;
+          height: 80px;
+          border-radius: 50%;
+          border: 2px solid #38bdf8;
+          margin-bottom: 12px;
+        "
+      />
+      <h2 style="margin: 0 0 8px 0; color: #38bdf8">Welcome to snOS</h2>
+      <p style="margin: 0 0 16px 0; color: #cbd5e1; font-size: 14px">
+        Personal Web Operating System
+      </p>
+      <button
+        style="
+          background-color: #38bdf8;
+          color: #0f172a;
+          border: none;
+          padding: 8px 18px;
+          font-weight: bold;
+          border-radius: 8px;
+          cursor: pointer;
+        "
+      >
+        Booting Up...
+      </button>
+    </div>
 
-    <p
-      style="
-        max-width: 450px;
-        line-height: 1.6;
-        font-size: 16px;
-        margin-bottom: 24px;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 16px;
-        border-radius: 12px;
-      "
-    >
-      Welcome to my OS! I am building <strong>SNOS</strong> for the Hack Club
-      Jam.<br />
-      <s>Boring static websites</s> ➔ <strong>Interactive Web OS!</strong><br />
-      <abbr title="Personal Operating System">POS</abbr>
-    </p>
+    <script>
+      function updateTime() {
+        var currentTime = new Date().toLocaleString();
+        var timeText = document.querySelector("#timeElement");
+        timeText.innerHTML = currentTime;
+      }
 
-    <a
-      href="https://github.com/mshibin04"
-      target="_blank"
-      style="
-        color: #72c6ef;
-        text-decoration: none;
-        font-size: 14px;
-        margin-bottom: 24px;
-      "
-    >
-      🔗 Check out my GitHub
-    </a>
-
-    <button
-      id="enter-btn"
-      style="
-        padding: 12px 30px;
-        font-size: 16px;
-        font-weight: bold;
-        color: #0f2027;
-        background-color: #ffffff;
-        border: none;
-        border-radius: 25px;
-        cursor: pointer;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      "
-    >
-      Boot Up snOS ➔
-    </button>
+      // Update clock every second
+      setInterval(updateTime, 1000);
+    </script>
   </body>
 </html>
