@@ -176,6 +176,39 @@
         </div>
         <span>Weather</span>
       </div>
+
+      <!-- NEW UNIQUE FEATURE: Browser App Icon -->
+      <div
+        id="browserAppIcon"
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          cursor: pointer;
+          width: 70px;
+          color: white;
+          font-size: 12px;
+          text-align: center;
+        "
+      >
+        <div
+          style="
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 6px;
+            backdrop-filter: blur(8px);
+          "
+        >
+          🌐
+        </div>
+        <span>Web Browser</span>
+      </div>
     </div>
 
     <!-- Window 1: About snOS -->
@@ -467,6 +500,113 @@
       </div>
     </div>
 
+    <!-- Window 4: NEW Web Browser App (Custom Feature) -->
+    <div
+      id="browserWindow"
+      class="window"
+      style="
+        position: absolute;
+        top: 45%;
+        left: 55%;
+        transform: translate(-50%, -50%);
+        width: 480px;
+        height: 320px;
+        border: 1px solid rgba(56, 189, 248, 0.4);
+        border-radius: 16px;
+        background-color: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(16px);
+        color: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+        overflow: hidden;
+        display: none;
+        z-index: 50;
+      "
+    >
+      <div
+        id="browserHeader"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: rgba(56, 189, 248, 0.15);
+          padding: 8px 16px;
+          cursor: move;
+          border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        "
+      >
+        <span style="font-size: 13px; font-weight: bold; color: #38bdf8"
+          >snOS Browser</span
+        >
+        <button
+          id="closeBrowserBtn"
+          style="
+            background: rgba(239, 68, 68, 0.8);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            cursor: pointer;
+          "
+        >
+          ✕
+        </button>
+      </div>
+
+      <div
+        style="
+          display: flex;
+          gap: 8px;
+          padding: 8px 12px;
+          background: rgba(0, 0, 0, 0.3);
+          border-bottom: 1px solid rgba(56, 189, 248, 0.2);
+        "
+      >
+        <input
+          id="browserUrl"
+          type="text"
+          value="https://wikipedia.org"
+          style="
+            flex: 1;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 6px;
+            color: white;
+            padding: 4px 10px;
+            font-size: 12px;
+            outline: none;
+          "
+        />
+        <button
+          id="goBtn"
+          style="
+            background: #38bdf8;
+            border: none;
+            border-radius: 6px;
+            color: #0f172a;
+            font-weight: bold;
+            padding: 0 10px;
+            cursor: pointer;
+            font-size: 12px;
+          "
+        >
+          Go
+        </button>
+      </div>
+
+      <iframe
+        id="browserFrame"
+        src="https://wikipedia.org"
+        style="
+          width: 100%;
+          height: calc(100% - 75px);
+          border: none;
+          background: white;
+        "
+      ></iframe>
+    </div>
+
     <script>
       function updateTime() {
         var currentTime = new Date().toLocaleString();
@@ -475,7 +615,7 @@
       setInterval(updateTime, 1000);
       updateTime();
 
-      let highestZIndex = 40;
+      let highestZIndex = 50;
       function bringToFront(windowElem) {
         highestZIndex++;
         windowElem.style.zIndex = highestZIndex;
@@ -529,7 +669,36 @@
           bringToFront(weatherWindow);
         });
 
-      // Live Weather API Fetcher
+      // Browser Window (Custom Feature)
+      const browserWindow = document.getElementById("browserWindow");
+      document
+        .getElementById("closeBrowserBtn")
+        .addEventListener(
+          "click",
+          () => (browserWindow.style.display = "none"),
+        );
+      document
+        .getElementById("browserAppIcon")
+        .addEventListener("click", () => {
+          browserWindow.style.display = "block";
+          bringToFront(browserWindow);
+        });
+
+      const browserUrl = document.getElementById("browserUrl");
+      const browserFrame = document.getElementById("browserFrame");
+      function loadUrl() {
+        let url = browserUrl.value.trim();
+        if (!url.startsWith("http://") && !url.startsWith("https://")) {
+          url = "https://" + url;
+        }
+        browserFrame.src = url;
+      }
+      document.getElementById("goBtn").addEventListener("click", loadUrl);
+      browserUrl.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") loadUrl();
+      });
+
+      // Weather API Fetcher
       async function fetchWeather(city) {
         const cityNameElem = document.getElementById("cityName");
         const tempDisplayElem = document.getElementById("tempDisplay");
@@ -541,7 +710,6 @@
 
         try {
           cityNameElem.innerText = "Searching...";
-
           const geoRes = await fetch(
             `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1&language=en&format=json`,
           );
@@ -554,50 +722,37 @@
           }
 
           const location = geoData.results[0];
-          const lat = location.latitude;
-          const lon = location.longitude;
-          const displayName =
-            location.name + (location.country ? `, ${location.country}` : "");
-
           const weatherRes = await fetch(
-            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&hourly=relativehumidity_2m`,
+            `https://api.open-meteo.com/v1/forecast?latitude=${location.latitude}&longitude=${location.longitude}&current_weather=true&hourly=relativehumidity_2m`,
           );
           const weatherData = await weatherRes.json();
           const current = weatherData.current_weather;
 
-          cityNameElem.innerText = displayName;
+          cityNameElem.innerText =
+            location.name + (location.country ? `, ${location.country}` : "");
           tempDisplayElem.innerText = Math.round(current.temperature) + "°C";
           windValElem.innerText = current.windspeed + " km/h";
-
-          if (weatherData.hourly && weatherData.hourly.relativehumidity_2m) {
-            humidityValElem.innerText =
-              weatherData.hourly.relativehumidity_2m[0] + "%";
-          } else {
-            humidityValElem.innerText = "N/A";
-          }
+          humidityValElem.innerText =
+            weatherData.hourly && weatherData.hourly.relativehumidity_2m
+              ? weatherData.hourly.relativehumidity_2m[0] + "%"
+              : "N/A";
 
           const code = current.weathercode;
           if (code === 0) {
             weatherIconElem.innerText = "☀️";
             weatherConditionElem.innerText = "Clear Sky";
-          } else if (code >= 1 && code <= 3) {
+          } else if (code <= 3) {
             weatherIconElem.innerText = "⛅";
             weatherConditionElem.innerText = "Partly Cloudy";
-          } else if (code >= 45 && code <= 48) {
+          } else if (code <= 48) {
             weatherIconElem.innerText = "🌫️";
             weatherConditionElem.innerText = "Foggy";
-          } else if (code >= 51 && code <= 67) {
+          } else if (code <= 67) {
             weatherIconElem.innerText = "🌧️";
             weatherConditionElem.innerText = "Rainy";
-          } else if (code >= 71 && code <= 77) {
+          } else if (code <= 77) {
             weatherIconElem.innerText = "❄️";
             weatherConditionElem.innerText = "Snowy";
-          } else if (code >= 80 && code <= 82) {
-            weatherIconElem.innerText = "🌦️";
-            weatherConditionElem.innerText = "Rain Showers";
-          } else if (code >= 95) {
-            weatherIconElem.innerText = "🌩️";
-            weatherConditionElem.innerText = "Thunderstorm";
           } else {
             weatherIconElem.innerText = "☁️";
             weatherConditionElem.innerText = "Cloudy";
@@ -649,6 +804,7 @@
       makeDraggable(myWindow, document.getElementById("windowHeader"));
       makeDraggable(notesWindow, document.getElementById("notesHeader"));
       makeDraggable(weatherWindow, document.getElementById("weatherHeader"));
+      makeDraggable(browserWindow, document.getElementById("browserHeader"));
     </script>
   </body>
 </html>
